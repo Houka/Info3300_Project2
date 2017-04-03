@@ -1,0 +1,105 @@
+<html>
+<head>
+	<title>INFO 3300 - Project 2 (cl795, jsm398, mrm343)</title>
+	<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+  	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://d3js.org/d3.v4.min.js"></script>
+	<script src="http://d3js.org/topojson.v2.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.21.0/d3-legend.min.js"></script>
+</head>
+<body>
+	<div id="header" class="jumbotron text-center">
+		<h1>Pollution and Politics</h1>
+	</div>
+	<div id="sliderDiv" class="container text-center">
+		<b><span id="yearLabel">Year: 1960</span></b>
+		<input type="range" id="yearSlider" max="1960" min="2016" value="1960" />
+		<span class="pull-left">1960</span>
+		<span class="pull-right">2016</span>
+	</div>
+	<div id="main" class="container-fluid text-center" style="background-color: #ccc;"></div>
+	
+
+	<!-- javascripts imported at the end -->
+	<script> // setup global variables script
+		var debug = true;
+		var mainDiv = d3.select("#main");
+
+		// screen resolution
+		var widthScale = 1500/window.innerWidth;
+		var screenHeight = 700 / widthScale;
+		var screenWidth = 1500 / widthScale;
+		var footerOffset = 50;
+		// set main div to screen resolution
+		mainDiv
+			.style("height", screenHeight + footerOffset)
+			.style("width", "100%");
+
+		// updating vars
+		var WAIT_TIME = 1500; // in milliseconds
+
+		// year variables
+		var year = 0;
+		var prevYear = 0;
+		var MIN_YEAR = 1960;
+		var MAX_YEAR = 2016;
+		var years = d3.range(MAX_YEAR-MIN_YEAR).map(function(i){return i+MIN_YEAR});
+		var yearSlider = d3.select("#yearSlider");
+
+		// setting year variables
+		yearSlider.property("min", MIN_YEAR);
+		yearSlider.property("max", MAX_YEAR);
+		year = yearSlider.property("value");
+		yearSlider.on("change", function(){
+			year = yearSlider.property("value");
+			d3.select("#yearLabel").text("Year: "+year);
+			log("year changed to: " + year);
+		});
+
+		// debug logging function wrapper
+		function log(msg){
+			if (debug)
+				console.log(msg);
+		}
+	</script>
+	<script src = "js/LineGraph.js"></script>
+	<script src = "js/Sunburst.js"></script>
+	<script src = "js/Scatterplot.js"></script>
+	<script src = "js/Map.js"></script>
+	<script src = "js/DataLoader.js"></script>
+	<script> // get, filter, and display data
+		/** Updates the display graphics on screen given a year and the data */
+		function update(data){
+			log("in update()");
+
+			// main displaying code goes here
+			displayLineGraph(data, year);
+			displaySunburst(data, year);
+			displayScatterplot(data, year);
+			displayMap(data, year);
+
+			// put the update function in a interval that updates every 1500 milliseconds
+			d3.interval(function() {
+				// only update if there was a change in the input for year
+				if (prevYear != year){
+					update(data);
+					prevYear = year;
+					log("prev year: "+prevYear+", year:"+year);
+				}
+			}, WAIT_TIME);
+		}
+
+		function displayData(){
+			log("in displayData()");
+			// Load the csv data files and then runs a callback to display the data
+			loadData(function(data) {
+				update(data);
+			});
+		}
+
+		log("starting up... debug = "+debug);
+		displayData();
+	</script>
+
+</body>
+</html>
