@@ -1,4 +1,4 @@
 /* Displays the scatterplot */
-function displayScatterplot(data, year){
+function displayScatterplot(data, year, svg){
 	
 }
