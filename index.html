@@ -69,17 +69,20 @@
 	<script src = "js/Map.js"></script>
 	<script src = "js/DataLoader.js"></script>
 	<script> // get, filter, and display data
-		var svg = mainDiv.append("svg").attr("width",200).attr("height",200);
+		var main = mainDiv.append("svg").attr("width",700).attr("height",400);
+		var side1 = mainDiv.append("svg").attr("width",400).attr("height",400);
+		var side2 = mainDiv.append("svg").attr("width",400).attr("height",400);
+		var bottom = mainDiv.append("svg").attr("width",700).attr("height",400);
 
 		/** Updates the display graphics on screen given a year and the data */
 		function update(data){
 			log("in update()");
 
 			// main displaying code goes here
-			displayLineGraph(data, year, svg);
-			displaySunburst(data, year, svg);
-			displayScatterplot(data, year, svg);
-			displayMap(data, year, svg);
+			displayLineGraph(data, year, side2);
+			displaySunburst(data, year, side1);
+			displayScatterplot(data, year, bottom);
+			displayMap(data, year, main);
 
 			// put the update function in a interval that updates every 1500 milliseconds
 			d3.interval(function() {

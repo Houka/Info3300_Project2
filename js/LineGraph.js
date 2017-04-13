@@ -28,6 +28,7 @@ function displayLineGraph(data, year, svg){
     .attr("class", "axis axis--x")
     .attr("transform", "translate(0," + (svg.attr("height")*0.9).toString() + ")")
     .call(d3.axisBottom(xScale));
+
  
     g.append("g")
     .attr("class", "axis axis-y")
