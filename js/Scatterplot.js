@@ -1,5 +1,6 @@
 /* Displays the scatterplot */
-function displayScatterplot(data, year){
+
+function displayScatterplot(data, year, svg){
 	var svg = mainDiv.append("svg")
 	.attr("width", "500px")
 	.attr("height", "500px")

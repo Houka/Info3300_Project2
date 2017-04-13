@@ -1,6 +1,7 @@
 <html>
 <head>
 	<title>INFO 3300 - Project 2 (cl795, jsm398, mrm343)</title>
+	<link rel='shortcut icon' type='image/x-icon' href='/favicon.ico' />
 	<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
   	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<script src="https://d3js.org/d3.v4.min.js"></script>
@@ -68,15 +69,17 @@
 	<script src = "js/Map.js"></script>
 	<script src = "js/DataLoader.js"></script>
 	<script> // get, filter, and display data
+		var svg = mainDiv.append("svg").attr("width",200).attr("height",200);
+
 		/** Updates the display graphics on screen given a year and the data */
 		function update(data){
 			log("in update()");
 
 			// main displaying code goes here
-			displayLineGraph(data, year);
-			displaySunburst(data, year);
-			displayScatterplot(data, year);
-			displayMap(data, year);
+			displayLineGraph(data, year, svg);
+			displaySunburst(data, year, svg);
+			displayScatterplot(data, year, svg);
+			displayMap(data, year, svg);
 
 			// put the update function in a interval that updates every 1500 milliseconds
 			d3.interval(function() {
