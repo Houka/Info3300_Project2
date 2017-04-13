@@ -1,9 +1,6 @@
 /* Displays the scatterplot */
 
 function displayScatterplot(data, year, svg){
-	svg.style("border", "1px solid black")
-	   .attr("width", "700")
-	   .attr("height", "500");
 
 	data = [];
 	for(i = 0; i<100; i++){
@@ -15,20 +12,6 @@ function displayScatterplot(data, year, svg){
 	ymax = d3.max(data, function(d){ return d[1] });
 	xScale = d3.scaleLinear().domain([0,10]).range([svg.attr("width")*0.1,svg.attr("width")*0.9]);
 	yScale = d3.scaleLinear().domain([ymin, ymax]).range([svg.attr("height")*0.9,svg.attr("height")*0.1]);
-	
-	// svg.append("line")
-	// .attr("x1", xScale(0))
-	// .attr("y1", yScale(ymin))
-	// .attr("x2", xScale(10))
-	// .attr("y2", yScale(ymin))
-	// .style("stroke", "black");
-
-	// svg.append("line")
-	// .attr("x1", xScale(0))
-	// .attr("y1", yScale(ymin))
-	// .attr("x2", xScale(0))
-	// .attr("y2", yScale(ymax))
-	// .style("stroke", "black");
 
 	g = svg.append("g")
 	    
