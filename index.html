@@ -7,6 +7,37 @@
 	<script src="https://d3js.org/d3.v4.min.js"></script>
 	<script src="https://d3js.org/topojson.v2.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.21.0/d3-legend.min.js"></script>
+	<style>
+        .background {
+		  fill: none;
+		  pointer-events: all;
+		}
+
+		.feature {
+		  fill: white;
+		  stroke: black;
+		  cursor: pointer;
+		  stroke-width: .2;
+		}
+
+		.feature.active {
+		  fill: orange;
+		}
+		.mesh {
+		  fill: none;
+		  stroke: black;
+		  stroke-width: .05;
+		}
+		#svg_world {
+			float: left;
+		  	border: solid white 1px;
+		  	margin-top: 20px;
+		}
+		#world_g {
+
+		}
+
+    </style>
 </head>
 <body>
 	<div id="header" class="jumbotron text-center">
@@ -19,7 +50,6 @@
 		<span class="pull-right">2016</span>
 	</div>
 	<div id="main" class="container-fluid text-center" style="background-color: #ccc;">
-		<br><br><svg id="world" height="400" width="500" >
 	</div>
 	
 
@@ -28,9 +58,95 @@
 		var debug = true;
 		var mainDiv = d3.select("#main");
 
+		//Initialize map 
+		var width = 750;
+		var height = 500;
+		var active = d3.select(null);
+
+		var projection = d3.geoMercator().scale(100).translate([370,270]);;
+
+		var zoom = d3.zoom()
+			.scaleExtent([1,8])
+			.on("zoom", zoomed);
+
+		var path = d3.geoPath().projection(projection);
+
+		var svg_world = d3.select("#main").append("svg")
+			.attr("id", "svg_world")
+			.attr("width", width)
+			.attr("height", height)
+			.on("click", stopped, true)
+
+		svg_world.append("rect")
+	    	.attr("class", "background")
+		    .attr("width", width)
+		    .attr("height", height)
+		    .on("click", reset);
+
+		var world_g = svg_world.append("g").attr("id", "world_g");
+		svg_world
+				.call(zoom);
+
+		d3.json("world-110m.json", function (error, data) {
+			if (error) throw error;
+
+			world_g.selectAll("path")
+				.data(topojson.feature(data, data.objects.countries).features)
+				.enter().append("path")
+				.attr("d", path)
+				.attr("class", "feature")
+				.on("click", clicked);
+
+			world_g.append("path")
+				.datum(topojson.mesh(data, data.objects.countries, function(a, b) { return a !== b; }))
+				.attr("class", "mesh")
+				.attr("d", path);
+		});
+
+		function clicked(d) {
+		  if (active.node() === this) return reset();
+		  active.classed("active", false);
+		  active = d3.select(this).classed("active", true);
+
+		  console.log("clicked!!");
+
+		  var bounds = path.bounds(d),
+		      dx = bounds[1][0] - bounds[0][0],
+		      dy = bounds[1][1] - bounds[0][1],
+		      x = (bounds[0][0] + bounds[1][0]) / 2,
+		      y = (bounds[0][1] + bounds[1][1]) / 2,
+		      scale = Math.max(1, Math.min(8, 0.9 / Math.max(dx / width, dy / height))),
+		      translate = [width / 2 - scale * x, height / 2 - scale * y];
+
+		  svg_world.transition()
+		      .duration(750)
+		      .call( zoom.transform, d3.zoomIdentity.translate(translate[0],translate[1]).scale(scale) );
+		}
+
+		function reset() {
+		  active.classed("active", false);
+		  active = d3.select(null);
+
+		  svg_world.transition()
+		      .duration(750)
+		      .call( zoom.transform, d3.zoomIdentity );
+		}
+
+		function zoomed() {
+		  world_g.style("stroke-width", 1.5 / d3.event.transform.k + "px");
+		  world_g.attr("transform", d3.event.transform); 
+		}
+
+		// If the drag behavior prevents the default click,
+		// also stop propagation so we don’t click-to-zoom.
+		function stopped() {
+		  if (d3.event.defaultPrevented) d3.event.stopPropagation();
+		}
+
+
 		// screen resolution
 		var widthScale = 1500/window.innerWidth;
-		var screenHeight = 700 / widthScale;
+		var screenHeight = 600 / widthScale;
 		var screenWidth = 1500 / widthScale;
 		var footerOffset = 50;
 		// set main div to screen resolution
@@ -40,6 +156,7 @@
 
 		// updating vars
 		var WAIT_TIME = 1500; // in milliseconds
+
 
 		// year variables
 		var year = 0;
