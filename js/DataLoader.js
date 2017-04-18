@@ -14,37 +14,39 @@
 function loadData(callback){
 	d3.csv("continent.csv", function(error, continentData){
 		d3.json("iso3.json", function(error, iso3Data){
-			var countryCodeMapping = parseCountryCodeMapping(continentData, iso3Data);
-			d3.csv("CO2Emissions.csv", function(error, co2Data){
-				d3.csv("politics.csv", function(error, politicsData){
-					var data = [];
+			d3.json("countryNames.json", function(error, countryNamesData){
+				var countryCodeMapping = parseCountryCodeMapping(continentData, iso3Data, countryNamesData);
+				d3.csv("CO2Emissions.csv", function(error, co2Data){
+					d3.csv("politics.csv", function(error, politicsData){
+						var data = [];
 
-					// parse the political data down to extract out useable data only
-					var parsedPoliticData = [];
-					var nestedPoliticsData = d3.nest().key(function(d){ return d.SCODE;}).entries(politicsData);
-					nestedPoliticsData.forEach(function(d){
-						var countryData = getCountryData(d.key, countryCodeMapping);
-						var democracyData = getPoliticalData(d.values);
-						parsedPoliticData = parsedPoliticData.concat(
-							{democracy: democracyData, iso2: countryData.iso2, iso3: countryData.iso3, continent: countryData.continent});
+						// parse the political data down to extract out useable data only
+						var parsedPoliticData = [];
+						var nestedPoliticsData = d3.nest().key(function(d){ return d.SCODE;}).entries(politicsData);
+						nestedPoliticsData.forEach(function(d){
+							var countryData = getCountryData(d.key, countryCodeMapping);
+							var democracyData = getPoliticalData(d.values);
+							parsedPoliticData = parsedPoliticData.concat(
+								{democracy: democracyData, iso2: countryData.iso2, iso3: countryData.iso3, continent: countryData.continent, country:countryData.country});
+						});
+						parsedPoliticData = d3.map(parsedPoliticData, function(d){ return d.iso3; });
+
+						// parse the co2 data and combine it to politics
+						co2Data.forEach(function(d){
+							var pData = parsedPoliticData["$"+d["Country Code"]];
+							if (pData != null){
+								var co2s = [];
+								years.forEach(function(y){
+									co2s = co2s.concat({year:y, co2:d[y]===""?".":d[y]});
+								});
+								data = data.concat(
+									{democracy: pData.democracy, iso2: pData.iso2, iso3: pData.iso3, continent: pData.continent, co2:co2s, country:pData.country});
+							}
+						});
+						log(data);
+
+						callback(data);
 					});
-					parsedPoliticData = d3.map(parsedPoliticData, function(d){ return d.iso3; });
-
-					// parse the co2 data and combine it to politics
-					co2Data.forEach(function(d){
-						var pData = parsedPoliticData["$"+d["Country Code"]];
-						if (pData != null){
-							var co2s = [];
-							years.forEach(function(y){
-								co2s = co2s.concat({year:y, co2:d[y]===""?".":d[y]});
-							});
-							data = data.concat(
-								{democracy: pData.democracy, iso2: pData.iso2, iso3: pData.iso3, continent: pData.continent, co2:co2s});
-						}
-					});
-					log(data);
-
-					callback(data);
 				});
 			});
 		});
@@ -65,10 +67,10 @@ function getPoliticalData(data){
 /* Parses the json files for iso2 to iso3 and continent to iso2 and create data structure 
 *	of information: [{iso2:AU, iso3:AUS, continent:EU},...]
 */
-function parseCountryCodeMapping(continentData, iso3Data){
+function parseCountryCodeMapping(continentData, iso3Data, countryNamesData){
 	result = [];
 	continentData.forEach(function(d){
-		result = result.concat({iso2:d.iso2, iso3:iso3Data[d.iso2], continent:d.continent});
+		result = result.concat({iso2:d.iso2, iso3:iso3Data[d.iso2], continent:d.continent, country:countryNamesData[d.iso2]});
 	});
 	result = d3.map(result, function(d){return d.iso3;});
 	return result;
@@ -79,6 +81,6 @@ function parseCountryCodeMapping(continentData, iso3Data){
 function getCountryData(iso3, countryCodeMapping){
 	var result = countryCodeMapping["$"+iso3];
 	if (result == null)
-		return {iso2:".", iso3:iso3, continent:"."};
+		return {iso2:".", iso3:iso3, continent:".", country:"."};
 	return result;
 }
