@@ -158,9 +158,9 @@
 		function clicked(d) {
 
 		  country_name.html(country_names[d.id]);
-
-		  displayLineGraph([], year, svg_side);
-		  displaySunburst([], year, svg_side);
+		  country = country_names[d.id];
+		  //displayLineGraph([], year, svg_side);
+		  //displaySunburst([], year, svg_side);
 
 		  if (active.node() === this) return reset();
 		  active.classed("active", false);
@@ -212,12 +212,14 @@
 			.style("width", "100%");
 
 		// updating vars
-		var WAIT_TIME = 1500; // in milliseconds
+		var WAIT_TIME = 100; // in milliseconds
 
 
 		// year variables
 		var year = 0;
 		var prevYear = 0;
+		var country = "";
+		var prevCountry = "";
 		var MIN_YEAR = 1960;
 		var MAX_YEAR = 2016;
 		var years = d3.range(MAX_YEAR-MIN_YEAR).map(function(i){return i+MIN_YEAR});
@@ -242,13 +244,13 @@
 	<script> // get, filter, and display data
 		// var main = mainDiv.append("svg").attr("width",700).attr("height",400);
 		// var bottom = mainDiv.append("svg").attr("width",700).attr("height",400);
-
+		// var debug = d3.select("body").append("svg").attr("width",500).attr("height",500);
 		/** Updates the display graphics on screen given a year and the data */
 		function update(data){
 			log("in update()");
 
-			// main displaying code goes here
-			// displayLineGraph(data, year, svg_side);
+			// main displaying code goes 
+			displayLineGraph(data, year, svg_side, "USA");
 			// displaySunburst(data, year, side1);
 			// displayScatterplot(data, year, bottom);
 			// displayMap(data, year, main);
@@ -260,6 +262,10 @@
 					update(data);
 					prevYear = year;
 					log("prev year: "+prevYear+", year:"+year);
+				}
+				if (country != prevCountry){
+					update(data);
+					prevCountry = country;
 				}
 			}, WAIT_TIME);
 		}

@@ -1,15 +1,30 @@
 /* Displays the line graphs */
-function displayLineGraph(data, year, svg){
+function displayLineGraph(data, year, svg, country){
+
 	var minYear=1960; var maxYear=2016;
+    data = data.filter(function(obj) {
+        return obj.iso3 == country;
+    });
+    dem = data[0].democracy;
+    co2 = data[0].co2;
 
-	data = [];
-	for(i = minYear; i<maxYear; i++){
-		dem = Math.floor(Math.random()*11);
-		data.push([i, dem, dem+(Math.random()-0.5)*10.0]);
-	}
 
-	ymin = d3.min(data, function(d){ return d[2] });
-	ymax = d3.max(data, function(d){ return d[2] });
+    data = [];
+    for(i=1960; i<=2016; i++){
+        demval = dem.filter(function(obj){
+            return obj.year==i.toString() && obj.democracy>=0;
+        });
+        co2val = co2.filter(function(obj){
+            return obj.year==i && obj.co2!=".";
+        });
+        
+        if(co2val.length>0 && demval.length>0){
+            data.push([i, demval[0].democracy, co2val[0].co2]);
+        };
+    };
+
+	ymin = d3.min(data, function(d){ return parseFloat(d[2]) });
+	ymax = d3.max(data, function(d){ return parseFloat(d[2]) });
 	xScale = d3.scaleLinear().domain([minYear,maxYear]).range([svg.attr("width")*0.1,svg.attr("width")*0.9]);
 	yScale1 = d3.scaleLinear().domain([0, 10]).range([svg.attr("height")*0.9,svg.attr("height")*0.1]);
 	yScale2 = d3.scaleLinear().domain([ymin, ymax]).range([svg.attr("height")*0.9,svg.attr("height")*0.1]);
