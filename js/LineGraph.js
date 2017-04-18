@@ -22,6 +22,8 @@ function displayLineGraph(data, year, svg){
 	.x(function(d) { return xScale(d[0]) })
 	.y(function(d) { return yScale2(d[2]) });
 
+    svg.select("g").remove();
+
 	g = svg.append("g")
 	    
     g.append("g")

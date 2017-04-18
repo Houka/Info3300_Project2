@@ -13,13 +13,18 @@ function displayScatterplot(data, year, svg){
 	xScale = d3.scaleLinear().domain([0,10]).range([svg.attr("width")*0.1,svg.attr("width")*0.9]);
 	yScale = d3.scaleLinear().domain([ymin, ymax]).range([svg.attr("height")*0.9,svg.attr("height")*0.1]);
 
+	svg.select("g").remove();
 	g = svg.append("g")
-	    
+	
     g.append("g")
     .attr("class", "axis axis--x")
     .attr("transform", "translate(0," + (svg.attr("height")*0.9).toString() + ")")
     .call(d3.axisBottom(xScale));
- 
+ 	
+ 	log(g.selectAll(".axis-y").length);
+ 	if(g.selectAll(".axis-y").length>0){
+ 		g.select(".axis-y").remove();
+ 	}
     g.append("g")
     .attr("class", "axis axis-y")
     .attr("transform", "translate(" + (svg.attr("width")*0.1).toString() + ",0)")

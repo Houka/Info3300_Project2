@@ -59,6 +59,11 @@
 	
 
 	<!-- javascripts imported at the end -->
+	<script src = "js/LineGraph.js"></script>
+	<script src = "js/Sunburst.js"></script>
+	<script src = "js/Scatterplot.js"></script>
+	<script src = "js/Map.js"></script>
+	<script src = "js/DataLoader.js"></script>
 	<script> // setup global variables script
 		var debug = true;
 		var mainDiv = d3.select("#main");
@@ -69,7 +74,7 @@
 			.attr("width", 400)
 			.attr("height", 500)
 
-		var country_name = svg_side.append("text")	
+		var country_name = svg_side.append("p")	
 			.attr("font-size", 20)
 			.attr("x", 200)
 			.attr("y", 50)
@@ -77,19 +82,19 @@
 			.attr("fill", "#aaa")
 			.html("Country Name");
 
-		svg_side.append("text")
-			.attr("font-size", 17)
-			.attr("x", 30)
-			.attr("y", 100)
-			.attr("fill", "#aaa")
-			.html("Pollution Level: ");
+		// svg_side.append("text")
+		// 	.attr("font-size", 17)
+		// 	.attr("x", 30)
+		// 	.attr("y", 100)
+		// 	.attr("fill", "#aaa")
+		// 	.html("Pollution Level: ");
 
-		svg_side.append("text")
-			.attr("font-size", 17)
-			.attr("x", 30)
-			.attr("y", 150)
-			.attr("fill", "#aaa")
-			.html("Democratic Scale: ");
+		// svg_side.append("text")
+		// 	.attr("font-size", 17)
+		// 	.attr("x", 30)
+		// 	.attr("y", 150)
+		// 	.attr("fill", "#aaa")
+		// 	.html("Democratic Scale: ");
 
 		//Initialize map 
 		var width = 750;
@@ -153,7 +158,7 @@
 		function clicked(d) {
 
 		  country_name.html(country_names[d.id]);
-
+		  displayLineGraph([], year, svg_side);
 		  if (active.node() === this) return reset();
 		  active.classed("active", false);
 		  active = d3.select(this).classed("active", true);
@@ -174,7 +179,7 @@
 		function reset() {
 		  active.classed("active", false);
 		  active = d3.select(null);
-
+		  svg_side.select("g").remove();
 		  svg_world.transition()
 		      .duration(750)
 		      .call( zoom.transform, d3.zoomIdentity );
@@ -230,11 +235,6 @@
 				console.log(msg);
 		}
 	</script>
-	<script src = "js/LineGraph.js"></script>
-	<script src = "js/Sunburst.js"></script>
-	<script src = "js/Scatterplot.js"></script>
-	<script src = "js/Map.js"></script>
-	<script src = "js/DataLoader.js"></script>
 	<script> // get, filter, and display data
 		var main = mainDiv.append("svg").attr("width",700).attr("height",400);
 		var side1 = mainDiv.append("svg").attr("width",400).attr("height",400);
@@ -246,7 +246,7 @@
 			log("in update()");
 
 			// main displaying code goes here
-			displayLineGraph(data, year, side2);
+			// displayLineGraph(data, year, svg_side);
 			displaySunburst(data, year, side1);
 			displayScatterplot(data, year, bottom);
 			displayMap(data, year, main);
