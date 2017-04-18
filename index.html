@@ -74,10 +74,10 @@
 			.attr("width", 400)
 			.attr("height", 500)
 
-		var country_name = svg_side.append("p")	
+		var country_name = svg_side.append("text")	
 			.attr("font-size", 20)
 			.attr("x", 200)
-			.attr("y", 50)
+			.attr("y", 30)
 			.attr("text-anchor", "middle")
 			.attr("fill", "#aaa")
 			.html("Country Name");
@@ -158,7 +158,10 @@
 		function clicked(d) {
 
 		  country_name.html(country_names[d.id]);
+
 		  displayLineGraph([], year, svg_side);
+		  displaySunburst([], year, svg_side);
+
 		  if (active.node() === this) return reset();
 		  active.classed("active", false);
 		  active = d3.select(this).classed("active", true);
@@ -180,6 +183,7 @@
 		  active.classed("active", false);
 		  active = d3.select(null);
 		  svg_side.select("g").remove();
+		  country_name.html("Country Name");
 		  svg_world.transition()
 		      .duration(750)
 		      .call( zoom.transform, d3.zoomIdentity );
@@ -236,10 +240,8 @@
 		}
 	</script>
 	<script> // get, filter, and display data
-		var main = mainDiv.append("svg").attr("width",700).attr("height",400);
-		var side1 = mainDiv.append("svg").attr("width",400).attr("height",400);
-		var side2 = mainDiv.append("svg").attr("width",400).attr("height",400);
-		var bottom = mainDiv.append("svg").attr("width",700).attr("height",400);
+		// var main = mainDiv.append("svg").attr("width",700).attr("height",400);
+		// var bottom = mainDiv.append("svg").attr("width",700).attr("height",400);
 
 		/** Updates the display graphics on screen given a year and the data */
 		function update(data){
@@ -247,9 +249,9 @@
 
 			// main displaying code goes here
 			// displayLineGraph(data, year, svg_side);
-			displaySunburst(data, year, side1);
-			displayScatterplot(data, year, bottom);
-			displayMap(data, year, main);
+			// displaySunburst(data, year, side1);
+			// displayScatterplot(data, year, bottom);
+			// displayMap(data, year, main);
 
 			// put the update function in a interval that updates every 1500 milliseconds
 			d3.interval(function() {
