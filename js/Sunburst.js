@@ -1,61 +1,91 @@
-/* Displays the sunburst chart */
+var color = d3.scaleOrdinal(d3.schemeCategory20c);
+
+// Keep track of the node that is currently being displayed as the root.
+var node;
+
+/* Displays the sunburst chart 
+*   Note: used https://bl.ocks.org/kerryrodden/477c1bfb081b783f80ad as a source of reference
+*/
 function displaySunburst(data, year, svg){
-	var minYear=1960; var maxYear=2016;
+    // initialize Svg
+    var width = +svg.style("width").replace("px",""),
+        height = +svg.style("height").replace("px",""),
+        radius = Math.min(width, height) / 2;
 
-	data = [];
-	for(i = minYear; i<maxYear; i++){
-		dem = Math.floor(Math.random()*11);
-		data.push([i, dem, dem+(Math.random()-0.5)*10.0]);
-	}
+    var g = svg.append("g")
+        .attr("transform", "translate(" + width / 2 + "," + (height / 2 + 10) + ")");
 
-	ymin = d3.min(data, function(d){ return d[2] });
-	ymax = d3.max(data, function(d){ return d[2] });
-	xScale = d3.scaleLinear().domain([minYear,maxYear]).range([svg.attr("width")*0.1,svg.attr("width")*0.9]);
-	yScale1 = d3.scaleLinear().domain([0, 10]).range([svg.attr("height")*0.9,svg.attr("height")*0.1]);
-	yScale2 = d3.scaleLinear().domain([ymin, ymax]).range([svg.attr("height")*0.9,svg.attr("height")*0.1]);
-	
-	line1 = d3.line()
-	.x(function(d) { return xScale(d[0]) })
-	.y(function(d) { return yScale1(d[1]) });
+    // get translation function
+    var xScale = d3.scaleLinear()
+        .domain([0, radius*2])
+        .range([0, 2 * Math.PI]);
+    var yScale = d3.scaleLinear()
+        .domain([0, radius*2])
+        .range([0, radius]);
+    var arc = d3.arc()
+        .startAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, xScale(d.x0))); })
+        .endAngle(function(d) { return Math.max(0, Math.min(2 * Math.PI, xScale(d.x1))); })
+        .innerRadius(function(d) { return Math.max(0, yScale(d.y0)); })
+        .outerRadius(function(d) { return Math.max(0, yScale(d.y1)); });
 
-	line2 = d3.line()
-	.x(function(d) { return xScale(d[0]) })
-	.y(function(d) { return yScale2(d[2]) });
+    // parse data down to correct format
+    var root = parseData(data);
+    node = root;
 
-    svg.select("g").remove();
+    d3.partition()
+        .size([radius*2,radius*2])
+        .round(true)
+        (root);
 
-	g = svg.append("g")
-	    
-    g.append("g")
-    .attr("class", "axis axis--x")
-    .attr("transform", "translate(0," + (svg.attr("height")*0.9).toString() + ")")
-    .call(d3.axisBottom(xScale).tickFormat(d3.format("d")));
- 
-    g.append("g")
-    .attr("class", "axis axis-y")
-    .attr("transform", "translate(" + (svg.attr("width")*0.1).toString() + ",0)")
-    .call(d3.axisLeft(yScale1));
+    // display data
+    var path = g.selectAll("path")
+        .data(root.descendants())
+        .enter().append("path")
+            .attr("d", arc)
+            //.style("stroke", "#ccc")
+            .style("fill", function(d) { return color(d.id); })
+            .style("fill-rule", "evenodd")
+            .on("click", click)
 
-    g.append("g")
-    .attr("class", "axis axis-y")
-    .attr("transform", "translate(" + (svg.attr("width")*0.9).toString() + ",0)")
-    .call(d3.axisRight(yScale2));
+    // function to decide what to do on a click
+    function click(d){
+        svg.transition()
+            .duration(750)
+            .tween("scale", function() {
+                var xd = d3.interpolate(xScale.domain(), [d.x0, d.x1]),
+                    yd = d3.interpolate(yScale.domain(), [d.y0, radius*2-1]),
+                    yr = d3.interpolate(yScale.range(), [d.y0 ? 20 : 0, radius]);
+                return function(t) { xScale.domain(xd(t)); yScale.domain(yd(t)).range(yr(t)); };
+            })
+            .selectAll("path")
+                .attrTween("d", function(d) { return function() { return arc(d); }; });
+    }
+}
 
-    g.append("path")
-    .datum(data)
-    .attr("fill", "none")
-    .attr("stroke", "steelblue")
-    .attr("stroke-linejoin", "round")
-    .attr("stroke-linecap", "round")
-    .attr("stroke-width", 1.5)
-    .attr("d", line1);
+/* Returns a suitable arc function that fits the data
+*/
+function getArc(data, radius){
+    return arc;
+}
 
-    g.append("path")
-    .datum(data)
-    .attr("fill", "none")
-    .attr("stroke", "black")
-    .attr("stroke-linejoin", "round")
-    .attr("stroke-linecap", "round")
-    .attr("stroke-width", 1.5)
-    .attr("d", line2);
+/* Parse data into node form where world is root, continent is node at depth 1, country is node at depth 2
+*/
+function parseData(data){
+    var parsedData = data.concat([
+        {country:"EU", continent:"world", currentCo2:0},
+        {country:"AS", continent:"world", currentCo2:0},
+        {country:"SA", continent:"world", currentCo2:0},
+        {country:"NA", continent:"world", currentCo2:0},
+        {country:"OC", continent:"world", currentCo2:0},
+        {country:"AF", continent:"world", currentCo2:0},
+        {country:"world", continent:""}
+    ]);
+
+    var root = d3.stratify()
+        .id(function(d) { return d.country; })
+        .parentId(function(d) { return d.continent; })
+        (parsedData)
+            .sum(function(d) { return isNaN(d.currentCo2)? 0:d.currentCo2; });
+
+    return root;
 }

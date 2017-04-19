@@ -43,7 +43,6 @@ function loadData(callback){
 									{democracy: pData.democracy, iso2: pData.iso2, iso3: pData.iso3, continent: pData.continent, co2:co2s, country:pData.country});
 							}
 						});
-						log(data);
 
 						callback(data);
 					});
@@ -83,4 +82,23 @@ function getCountryData(iso3, countryCodeMapping){
 	if (result == null)
 		return {iso2:".", iso3:iso3, continent:".", country:"."};
 	return result;
+}
+
+/* filter data for democracy and co2 to only specific year
+*/
+function filterYear(data, year){
+    data.forEach(function(d){
+        var currentCo2 = d.co2.filter(function(i){
+            return +i.year == +year;
+        })[0];
+        var currentDemocracy = d.democracy.filter(function(i){
+            return +i.year == +year;
+        })[0];
+
+        // normalize data to be either number or NaN
+        d.currentCo2 = currentCo2? (isNaN(currentCo2.co2)? NaN : +currentCo2.co2) : NaN;
+        // note: democracy with negative values are false numbers
+        d.currentDemocracy = currentDemocracy? (isNaN(d.democracy)? NaN : 
+        						(+currentDemocracy.democracy<0? NaN: +currentDemocracy.democracy)) : NaN;
+    });
 }

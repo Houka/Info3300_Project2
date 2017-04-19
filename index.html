@@ -40,8 +40,6 @@
 			margin-top: 20px;
 		  	border: solid white 1px;
 		}
-
-
     </style>
 </head>
 <body>
@@ -241,15 +239,17 @@
 	</script>
 	<script> // get, filter, and display data
 		// var main = mainDiv.append("svg").attr("width",700).attr("height",400);
-		// var bottom = mainDiv.append("svg").attr("width",700).attr("height",400);
+		var sunburst = d3.select("body").append("svg").attr("width",960).attr("height",700);
 
 		/** Updates the display graphics on screen given a year and the data */
 		function update(data){
 			log("in update()");
 
+			filterYear(data, year);
+			
 			// main displaying code goes here
 			// displayLineGraph(data, year, svg_side);
-			// displaySunburst(data, year, side1);
+			displaySunburst(data, year, sunburst);
 			// displayScatterplot(data, year, bottom);
 			// displayMap(data, year, main);
 
