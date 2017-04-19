@@ -70,7 +70,7 @@ function displayMap(data, mapData, countryNames, year, svg){
 
 function displaySideInfo(data, year, country, svg){
 	log("in side info")
-   	d3.select("#info").text(country === ""? "Country Name":country);
+   	d3.select("#info").text(country === ""? "Pick a country":country);
 }
 
 function createResetListener(svg, reset){
