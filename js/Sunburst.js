@@ -7,7 +7,8 @@ function displaySunburst(data, year, svg){
     // initialize Svg
     var width = +svg.style("width").replace("px",""),
         height = +svg.style("height").replace("px",""),
-        radius = Math.min(width, height) / 2;
+        padding = 50,
+        radius = Math.min(width-padding, height-padding) / 2;
 
     var g = svg.append("g")
         .attr("transform", "translate(" + width / 2 + "," + (height / 2 + 10) + ")");

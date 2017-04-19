@@ -12,13 +12,11 @@
 		  fill: none;
 		  pointer-events: all;
 		}
-
 		.feature {
 		  stroke: black;
 		  cursor: pointer;
 		  stroke-width: .2;
 		}
-
 		.feature.active {
 		  fill: orange;
 		}
@@ -27,18 +25,17 @@
 		  stroke: black;
 		  stroke-width: .05;
 		}
-		#svg_world {
+		#map {
 			float: left;
 		  	border: solid white 1px;
-		  	margin-top: 20px;
 		}
-		#svg_side {
-			background: white;
-			float: right;
-			position: absolute;
-			left: 780px;
-			margin-top: 20px;
+		#sidebar {
+			float: left;
 		  	border: solid white 1px;
+		  	overflow:auto;
+		}
+		svg{
+			border: 1px solid red;
 		}
     </style>
 </head>
@@ -53,161 +50,31 @@
 		<span class="pull-right">2016</span>
 	</div>
 	<div id="main" class="container-fluid text-center" style="background-color: #ccc;">
+		<svg id="map" width="59.8%" height="100%" ></svg>
+		<div id="sidebar" width="100%" height="100%">
+			<h2 id="info"></h2>
+			<svg id="sunburst" width="100%" height="100%"></svg>
+			<svg id="lineGraph" width="100%" height="100%"></svg>
+		</div>
 	</div>
 	
-
-	<!-- javascripts imported at the end -->
-	<script src = "js/LineGraph.js"></script>
-	<script src = "js/Sunburst.js"></script>
-	<script src = "js/Scatterplot.js"></script>
-	<script src = "js/Map.js"></script>
-	<script src = "js/DataLoader.js"></script>
 	<script> // setup global variables script
 		var debug = true;
 		var mainDiv = d3.select("#main");
-
-		//Initialize side-view
-		var svg_side = d3.select("#main").append("svg")
-			.attr("id", "svg_side")
-			.attr("width", 400)
-			.attr("height", 500)
-
-		var country_name = svg_side.append("text")	
-			.attr("font-size", 20)
-			.attr("x", 200)
-			.attr("y", 30)
-			.attr("text-anchor", "middle")
-			.attr("fill", "#aaa")
-			.html("Country Name");
-
-		// svg_side.append("text")
-		// 	.attr("font-size", 17)
-		// 	.attr("x", 30)
-		// 	.attr("y", 100)
-		// 	.attr("fill", "#aaa")
-		// 	.html("Pollution Level: ");
-
-		// svg_side.append("text")
-		// 	.attr("font-size", 17)
-		// 	.attr("x", 30)
-		// 	.attr("y", 150)
-		// 	.attr("fill", "#aaa")
-		// 	.html("Democratic Scale: ");
-
-		//Initialize map 
-		var width = 750;
-		var height = 500;
-		var active = d3.select(null);
-
-		var projection = d3.geoMercator().scale(100).translate([370,270]);;
-
-		var zoom = d3.zoom()
-			.scaleExtent([1,8])
-			.on("zoom", zoomed);
-
-		var path = d3.geoPath().projection(projection);
-
-		var svg_world = d3.select("#main").append("svg")
-			.attr("id", "svg_world")
-			.attr("width", width)
-			.attr("height", height)
-			.on("click", stopped, true)
-
-		svg_world.append("rect")
-	    	.attr("class", "background")
-		    .attr("width", width)
-		    .attr("height", height)
-		    .on("click", reset);
-
-		var world_g = svg_world.append("g").attr("id", "world_g");
-		svg_world
-				.call(zoom);
-
-		//Set up country names
-		var country_names = [];
-
-		d3.tsv("world-110m-country-names.tsv", function(error, tsv){
-				if (error) throw error;
-				
-				tsv.forEach(function(d,i) {
-					country_names[d.id] = d.name;
-				})
-		})
-
-		//Display map 
-		d3.json("world-110m.json", function (error, data) {
-			if (error) throw error;
-
-			world_g.selectAll("path")
-				.data(topojson.feature(data, data.objects.countries).features)
-				.enter().append("path")
-				.attr("d", path)
-				.attr("class", "feature")
-				.attr("fill", function(a, b) {/*console.log(country_names[a.id]);*/ return "white";})
-				.on("click", clicked);
-
-				world_g.append("path")
-				.datum(topojson.mesh(data, data.objects.countries, function(a, b) { return a !== b; }))
-				.attr("class", "mesh")
-				.attr("d", path);
-
-		})
-
-		function clicked(d) {
-
-		  country_name.html(country_names[d.id]);
-		  country = country_names[d.id];
-		  //displayLineGraph([], year, svg_side);
-		  //displaySunburst([], year, svg_side);
-
-		  if (active.node() === this) return reset();
-		  active.classed("active", false);
-		  active = d3.select(this).classed("active", true);
-
-		  var bounds = path.bounds(d),
-		      dx = bounds[1][0] - bounds[0][0],
-		      dy = bounds[1][1] - bounds[0][1],
-		      x = (bounds[0][0] + bounds[1][0]) / 2,
-		      y = (bounds[0][1] + bounds[1][1]) / 2,
-		      scale = Math.max(1, Math.min(8, 0.9 / Math.max(dx / width, dy / height))),
-		      translate = [width / 2 - scale * x, height / 2 - scale * y];
-
-		  svg_world.transition()
-		      .duration(750)
-		      .call( zoom.transform, d3.zoomIdentity.translate(translate[0],translate[1]).scale(scale) );
-		}
-
-		function reset() {
-		  active.classed("active", false);
-		  active = d3.select(null);
-		  svg_side.select("g").remove();
-		  country_name.html("Country Name");
-		  svg_world.transition()
-		      .duration(750)
-		      .call( zoom.transform, d3.zoomIdentity );
-		}
-
-		function zoomed() {
-		  world_g.style("stroke-width", 1.5 / d3.event.transform.k + "px");
-		  world_g.attr("transform", d3.event.transform); 
-		}
-
-		// If the drag behavior prevents the default click,
-		// also stop propagation so we don’t click-to-zoom.
-		function stopped() {
-		  if (d3.event.defaultPrevented) d3.event.stopPropagation();
-		}
-
 
 		// screen resolution
 		var widthScale = 1500/window.innerWidth;
 		var screenHeight = 600 / widthScale;
 		var screenWidth = 1500 / widthScale;
-		var footerOffset = 50;
+		var footerOffset = 30;
 		// set main div to screen resolution
 		mainDiv
-			.style("height", "540")
-			.style("width", "100%");
+			.style("height", screenHeight-footerOffset)
+			.style("width", screenWidth);
+		// set sidebar to correct width
+		d3.select("#sidebar")
+			.style("height", screenHeight-footerOffset)
+			.style("width", screenWidth*.39);
 
 		// updating vars
 		var WAIT_TIME = 100; // in milliseconds
@@ -216,7 +83,8 @@
 		// year variables
 		var year = 0;
 		var prevYear = 0;
-		var country = "";
+		var C = "";
+		var selectedCountry = "";
 		var prevCountry = "";
 		var MIN_YEAR = 1960;
 		var MAX_YEAR = 2016;
@@ -239,35 +107,37 @@
 				console.log(msg);
 		}
 	</script>
+	<!-- javascripts imported at the end -->
+	<script src = "js/LineGraph.js"></script>
+	<script src = "js/Sunburst.js"></script>
+	<script src = "js/Scatterplot.js"></script>
+	<script src = "js/Map.js"></script>
+	<script src = "js/DataLoader.js"></script>
 	<script> // get, filter, and display data
-		var sunburst = d3.select("body").append("svg").attr("width",960).attr("height",700);
-
 		/** Updates the display graphics on screen given a year and the data */
-		function update(data){
+		function update(data, mapData, countryNames){
 			log("in update()");
 
 			filterYear(data, year);
 			
 			// main displaying code goes here
-			// displayLineGraph(data, year, svg_side);
-			displaySunburst(data, year, sunburst);
-			// main displaying code goes 
-			displayLineGraph(data, year, svg_side, "USA");
-			// displaySunburst(data, year, side1);
-			// displayScatterplot(data, year, bottom);
-			// displayMap(data, year, main);
+			displayMap(data, mapData, countryNames, year, d3.select("#map"));
+			displaySideInfo(data, year, selectedCountry, d3.select("#info"));
+			displayLineGraph(data, year, selectedCountry, d3.select("#lineGraph"));
+			displaySunburst(data, year, d3.select("#sunburst"));
 
 			// put the update function in a interval that updates every 1500 milliseconds
 			d3.interval(function() {
 				// only update if there was a change in the input for year
 				if (prevYear != year){
-					update(data);
-					prevYear = year;
 					log("prev year: "+prevYear+", year:"+year);
+					update(data, mapData, countryNames);
+					prevYear = year;
 				}
-				if (country != prevCountry){
-					update(data);
-					prevCountry = country;
+				if (selectedCountry != prevCountry){
+					log("prev country: "+prevCountry+", country:"+selectedCountry);
+					update(data, mapData, countryNames);
+					prevCountry = selectedCountry;
 				}
 			}, WAIT_TIME);
 		}
@@ -275,8 +145,8 @@
 		function displayData(){
 			log("in displayData()");
 			// Load the csv data files and then runs a callback to display the data
-			loadData(function(data) {
-				update(data);
+			loadData(function(data, mapData, countryNames) {
+				update(data, mapData,countryNames);
 			});
 		}
 

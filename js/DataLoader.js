@@ -44,7 +44,15 @@ function loadData(callback){
 							}
 						});
 
-						callback(data);
+						d3.json("world-110m.json", function (error, mapData) {
+							d3.tsv("world-110m-country-names.tsv", function(error, tsv){
+								var countryNames = [];
+								tsv.forEach(function(d,i) {
+									countryNames[d.id] = d.name;
+								});
+								callback(data,mapData,countryNames);
+							});
+						});
 					});
 				});
 			});

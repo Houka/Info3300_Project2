@@ -1,10 +1,16 @@
 /* Displays the line graphs */
-function displayLineGraph(data, year, svg, country){
-
+function displayLineGraph(data, year, country, svg){
+    var width = +svg.style("width").replace("px",""),
+        height = +svg.style("height").replace("px","");
 	var minYear=1960; var maxYear=2016;
     data = data.filter(function(obj) {
-        return obj.iso3 == country;
+        log(obj.country+","+country+","+(obj.country === country));
+        return obj.country === country;
     });
+
+    // null case
+    if (data.length == 0) return;
+
     dem = data[0].democracy;
     co2 = data[0].co2;
 
@@ -25,9 +31,9 @@ function displayLineGraph(data, year, svg, country){
 
 	ymin = d3.min(data, function(d){ return parseFloat(d[2]) });
 	ymax = d3.max(data, function(d){ return parseFloat(d[2]) });
-	xScale = d3.scaleLinear().domain([minYear,maxYear]).range([svg.attr("width")*0.1,svg.attr("width")*0.9]);
-	yScale1 = d3.scaleLinear().domain([0, 10]).range([svg.attr("height")*0.9,svg.attr("height")*0.1]);
-	yScale2 = d3.scaleLinear().domain([ymin, ymax]).range([svg.attr("height")*0.9,svg.attr("height")*0.1]);
+	xScale = d3.scaleLinear().domain([minYear,maxYear]).range([width*0.1, width*0.9]);
+	yScale1 = d3.scaleLinear().domain([0, 10]).range([height*0.9, height*0.1]);
+	yScale2 = d3.scaleLinear().domain([ymin, ymax]).range([height*0.9, height*0.1]);
 	
 	line1 = d3.line()
 	.x(function(d) { return xScale(d[0]) })
@@ -43,17 +49,17 @@ function displayLineGraph(data, year, svg, country){
 	    
     g.append("g")
     .attr("class", "axis axis--x")
-    .attr("transform", "translate(0," + (svg.attr("height")*0.9).toString() + ")")
+    .attr("transform", "translate(0," + (height*0.9).toString() + ")")
     .call(d3.axisBottom(xScale).tickFormat(d3.format("d")));
  
     g.append("g")
     .attr("class", "axis axis-y")
-    .attr("transform", "translate(" + (svg.attr("width")*0.1).toString() + ",0)")
+    .attr("transform", "translate(" + (width*0.1).toString() + ",0)")
     .call(d3.axisLeft(yScale1));
 
     g.append("g")
     .attr("class", "axis axis-y")
-    .attr("transform", "translate(" + (svg.attr("width")*0.9).toString() + ",0)")
+    .attr("transform", "translate(" + (width*0.9).toString() + ",0)")
     .call(d3.axisRight(yScale2));
 
     g.append("path")
