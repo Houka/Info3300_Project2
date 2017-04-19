@@ -1,8 +1,5 @@
 var color = d3.scaleOrdinal(d3.schemeCategory20c);
 
-// Keep track of the node that is currently being displayed as the root.
-var node;
-
 /* Displays the sunburst chart 
 *   Note: used https://bl.ocks.org/kerryrodden/477c1bfb081b783f80ad as a source of reference
 */
@@ -30,7 +27,6 @@ function displaySunburst(data, year, svg){
 
     // parse data down to correct format
     var root = parseData(data);
-    node = root;
 
     d3.partition()
         .size([radius*2,radius*2])
