@@ -3,7 +3,7 @@ var color = d3.scaleOrdinal(d3.schemeCategory20c);
 /* Displays the sunburst chart 
 *   Note: used https://bl.ocks.org/kerryrodden/477c1bfb081b783f80ad as a source of reference
 */
-function displaySunburst(data, year, selectedCountry, svg){
+function displaySunburst(data, year, country, svg){
     // initialize Svg
     var width = +svg.style("width").replace("px",""),
         height = +svg.style("height").replace("px",""),
@@ -45,15 +45,40 @@ function displaySunburst(data, year, selectedCountry, svg){
             .on("click", click)
             .on("mouseover", enter);
 
-    if (selectedCountry != "")
-        click(getCountry(selectedCountry, root.descendants()));
+    svg.selectAll("text").remove();
+    var text1 = svg.append("text")
+        .attr("class","sunburstText")
+        .attr("x",width/2)
+        .attr("y",height/2-height/4)
+        .attr("text-anchor","middle")
+        .text("Select A Country");
+
+    var text2 = svg.append("text")
+        .attr("class","sunburstText")
+        .attr("x",width/2)
+        .attr("y",height/2+height/4)
+        .attr("text-anchor","middle")
+        .text("");
+
+    if (country != ""){
+        click(getCountrySunburst(country, root.descendants()));
+    }
 
     // function to decide what to do on a click
     function click(d){
-        if(d==null)
+        if(d==null){
             return;
-        if (d.depth == 2)
+        }
+        if (d.depth == 2){
             selectedCountry = d.id;
+            text1.text("Metric Ton of CO2 Per Capital");
+            text2.text((+d.value).toFixed(2));
+        }else{
+            selectedCountry = "";
+            text1.text(d.id);
+            text2.text("");
+        }
+
         svg.transition()
             .duration(750)
             .tween("scale", function() {
@@ -67,8 +92,12 @@ function displaySunburst(data, year, selectedCountry, svg){
     }
 
     function enter(d){
-        d3.select("#info").text(d.id+":"+d.value+" metric tons of co2 emission");
+        text1.text(d.id);
     }
+}
+
+function getText(svg){
+     return svg.append("text");
 }
 
 /* Returns a suitable arc function that fits the data
@@ -77,7 +106,7 @@ function getArc(data, radius){
     return arc;
 }
 
-function getCountry(country, nodes){
+function getCountrySunburst(country, nodes){
     var result = null;
     nodes.forEach(function(d){
         if (d.id === country)

@@ -32,6 +32,7 @@ function displayMap(data, mapData, countryNames, year, svg){
 	world_g.selectAll("path")
 		.data(topojson.feature(mapData, mapData.objects.countries).features)
 		.enter().append("path")
+		.attr("id", function(d){return "path"+d.id;})
 		.attr("d", path)
 		.attr("class", "feature")
 		.attr("fill", function(a, b) {return demcolors(demlist[b]);})
@@ -42,16 +43,19 @@ function displayMap(data, mapData, countryNames, year, svg){
 		.attr("class", "mesh")
 		.attr("d", path);
 
-	/*if (selectedCountry != ""){
-		clicked(getCountry(selectedCountry, topojson.feature(mapData, mapData.objects.countries).features));
-	}*/
+	clicked(getCountry(selectedCountry, countryNames,topojson.feature(mapData, mapData.objects.countries).features));
 
 	function clicked(d) {
+		log("in clicked");
+		log(d);
+		if(d==null)
+			return reset(svg);
+
 		selectedCountry = countryNames[d.id];
 
 		if (active.node() === this) return reset(svg);
 		active.classed("active", false);
-		active = d3.select(this).classed("active", true);
+		active = world_g.select("#path"+d.id).classed("active", true);
 
 		var bounds = path.bounds(d),
 			dx = bounds[1][0] - bounds[0][0],
@@ -82,8 +86,16 @@ function displayMap(data, mapData, countryNames, year, svg){
 	}
 }
 
-function getCountry(country,data){
-
+function getCountry(country,countryNames,data){
+	var result = null;
+	data.forEach(function(d){
+		if (countryNames[d.id] === country){
+			log("in get");
+			log(d);
+			result = d;
+		}
+	});
+	return result;
 }
 
 function demcolors(num){
