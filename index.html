@@ -130,7 +130,7 @@
 			displayMap(data, mapData, countryNames, year, d3.select("#map"));
 			displaySideInfo(data, year, selectedCountry, d3.select("#info"));
 			displayLineGraph(data, year, selectedCountry, d3.select("#lineGraph"));
-			displaySunburst(data, year, d3.select("#sunburst"));
+			displaySunburst(data, year, selectedCountry, d3.select("#sunburst"));
 
 			// put the update function in a interval that updates every 1500 milliseconds
 			d3.interval(function() {
