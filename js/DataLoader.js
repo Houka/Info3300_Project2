@@ -106,7 +106,7 @@ function filterYear(data, year){
         // normalize data to be either number or NaN
         d.currentCo2 = currentCo2? (isNaN(currentCo2.co2)? NaN : +currentCo2.co2) : NaN;
         // note: democracy with negative values are false numbers
-        d.currentDemocracy = currentDemocracy? (isNaN(d.democracy)? NaN : 
+        d.currentDemocracy = currentDemocracy? (isNaN(currentDemocracy.democracy)? NaN : 
         						(+currentDemocracy.democracy<0? NaN: +currentDemocracy.democracy)) : NaN;
     });
 }

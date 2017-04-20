@@ -4,7 +4,6 @@ function displayLineGraph(data, year, country, svg){
         height = +svg.style("height").replace("px","");
 	var minYear=1960; var maxYear=2016;
     data = data.filter(function(obj) {
-        log(obj.country+","+country+","+(obj.country === country));
         return obj.country === country;
     });
 
