@@ -12,6 +12,14 @@ function displayMap(data, mapData, countryNames, year, svg){
 	svg.on("click", stopped, true);
 	createResetListener(svg, reset);
 
+	//data -- democracy 
+	var demlist = [];
+	for (i = 0; i < 169; i++){
+		if (data[i] != null){
+			demlist.push(data[i].currentDemocracy);
+		}
+	}
+
 	// create the graphics
 	var world_g = svg.select("#world_g").empty()? svg.append("g").attr("id", "world_g") : svg.select("#world_g");
 	var zoom = d3.zoom()
@@ -19,18 +27,24 @@ function displayMap(data, mapData, countryNames, year, svg){
 		.on("zoom", zoomed);
 	svg.call(zoom);
 
+	world_g.selectAll("path").remove();
+
 	world_g.selectAll("path")
 		.data(topojson.feature(mapData, mapData.objects.countries).features)
 		.enter().append("path")
 		.attr("d", path)
 		.attr("class", "feature")
-		.attr("fill", function(a, b) { return "white";})
+		.attr("fill", function(a, b) {return demcolors(demlist[b]);})
 		.on("click", clicked);
 
 	world_g.append("path")
 		.datum(topojson.mesh(mapData, mapData.objects.countries, function(a, b) { return a !== b; }))
 		.attr("class", "mesh")
 		.attr("d", path);
+
+	/*if (selectedCountry != ""){
+		clicked(getCountry(selectedCountry, topojson.feature(mapData, mapData.objects.countries).features));
+	}*/
 
 	function clicked(d) {
 		selectedCountry = countryNames[d.id];
@@ -66,6 +80,38 @@ function displayMap(data, mapData, countryNames, year, svg){
 			.duration(750)
 			.call(zoom.transform, d3.zoomIdentity);
 	}
+}
+
+function getCountry(country,data){
+
+}
+
+function demcolors(num){
+	if (num == 0) {
+		return "#fe1110";
+	} else if (num == 1){
+		return "#ff594f";
+	} else if (num == 2){
+		return "#ff9686";
+	} else if (num == 3){
+		return "#ffd1bf";
+	} else if (num == 4){
+		return "#fae3db";
+	} else if (num == 5){
+		return "#f8feff";
+	} else if (num == 6){
+		return "#bfd4ff";
+	} else if (num == 7){
+		return "#859bff";
+	} else if (num == 8){
+		return "#4a5cff";
+	} else if (num == 9){
+		return "#2f43f1";
+	} else if (num == 10){
+		return "#0711d3";
+	} else {
+		return "black";
+	} 
 }
 
 function displaySideInfo(data, year, country, svg){

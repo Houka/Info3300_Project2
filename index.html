@@ -34,10 +34,8 @@
 		  	border: none;
 		}
 		#sidebar {
-			padding-left: 15px;
 			float: left;
-		  	border: solid #aaa 4px;
-		  	border-right: 0;
+		  	border: solid #aaa 2px;
 		  	overflow:auto;
 		}
 		
@@ -132,7 +130,7 @@
 			displayMap(data, mapData, countryNames, year, d3.select("#map"));
 			displaySideInfo(data, year, selectedCountry, d3.select("#info"));
 			displayLineGraph(data, year, selectedCountry, d3.select("#lineGraph"));
-			displaySunburst(data, year, d3.select("#sunburst"));
+			displaySunburst(data, year, selectedCountry, d3.select("#sunburst"));
 
 			// put the update function in a interval that updates every 1500 milliseconds
 			d3.interval(function() {

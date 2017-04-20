@@ -3,7 +3,7 @@ var color = d3.scaleOrdinal(d3.schemeCategory20c);
 /* Displays the sunburst chart 
 *   Note: used https://bl.ocks.org/kerryrodden/477c1bfb081b783f80ad as a source of reference
 */
-function displaySunburst(data, year, svg){
+function displaySunburst(data, year, selectedCountry, svg){
     // initialize Svg
     var width = +svg.style("width").replace("px",""),
         height = +svg.style("height").replace("px",""),
@@ -43,9 +43,17 @@ function displaySunburst(data, year, svg){
             .style("fill", function(d) { return color(d.id); })
             .style("fill-rule", "evenodd")
             .on("click", click)
+            .on("mouseover", enter);
+
+    if (selectedCountry != "")
+        click(getCountry(selectedCountry, root.descendants()));
 
     // function to decide what to do on a click
     function click(d){
+        if(d==null)
+            return;
+        if (d.depth == 2)
+            selectedCountry = d.id;
         svg.transition()
             .duration(750)
             .tween("scale", function() {
@@ -57,12 +65,25 @@ function displaySunburst(data, year, svg){
             .selectAll("path")
                 .attrTween("d", function(d) { return function() { return arc(d); }; });
     }
+
+    function enter(d){
+        d3.select("#info").text(d.id+":"+d.value+" metric tons of co2 emission");
+    }
 }
 
 /* Returns a suitable arc function that fits the data
 */
 function getArc(data, radius){
     return arc;
+}
+
+function getCountry(country, nodes){
+    var result = null;
+    nodes.forEach(function(d){
+        if (d.id === country)
+            result = d;
+    });
+    return result;
 }
 
 /* Parse data into node form where world is root, continent is node at depth 1, country is node at depth 2
