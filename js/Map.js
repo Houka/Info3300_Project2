@@ -14,9 +14,13 @@ function displayMap(data, mapData, countryNames, year, svg){
 
 	//data -- democracy 
 	var demlist = [];
+	var demnamlist = [];
 	for (i = 0; i < 169; i++){
 		if (data[i] != null){
 			demlist.push(data[i].currentDemocracy);
+		}
+		else {
+			demlist.push(11);
 		}
 	}
 
@@ -35,7 +39,7 @@ function displayMap(data, mapData, countryNames, year, svg){
 		.attr("id", function(d){return "path"+d.id;})
 		.attr("d", path)
 		.attr("class", "feature")
-		.attr("fill", function(a, b) {return demcolors(demlist[b]);})
+		.attr("fill", function(a, b) {return demcolors(select_country(countryNames[a.id]));})
 		.on("click", clicked);
 
 	world_g.append("path")
@@ -45,9 +49,19 @@ function displayMap(data, mapData, countryNames, year, svg){
 
 	clicked(getCountry(selectedCountry, countryNames,topojson.feature(mapData, mapData.objects.countries).features));
 
+	function select_country(name) {
+		select_data = data.filter(function(obj) {
+        	return obj.country === name;
+    	});
+    	if (select_data.length > 0) {
+    		return select_data[0].currentDemocracy;
+    	}
+    	else {
+    		return 11;
+    	}
+	}
+
 	function clicked(d) {
-		log("in clicked");
-		log(d);
 		if(d==null)
 			return reset(svg);
 
@@ -90,8 +104,6 @@ function getCountry(country,countryNames,data){
 	var result = null;
 	data.forEach(function(d){
 		if (countryNames[d.id] === country){
-			log("in get");
-			log(d);
 			result = d;
 		}
 	});
@@ -127,7 +139,6 @@ function demcolors(num){
 }
 
 function displaySideInfo(data, year, country, svg){
-	log("in side info")
    	d3.select("#info").text(country === ""? "Pick a country":country);
 }
 

@@ -7,6 +7,10 @@ function displayLineGraph(data, year, country, svg){
         return obj.country === country;
     });
 
+    svg.selectAll("g").remove();
+    svg.selectAll("text").remove();
+    svg.selectAll("rect").remove();
+
     // null case
     if (data.length == 0) return;
 
@@ -42,9 +46,7 @@ function displayLineGraph(data, year, country, svg){
 	.x(function(d) { return xScale(d[0]) })
 	.y(function(d) { return yScale2(d[2]) });
 
-    svg.select("g").remove();
-
-	g = svg.append("g")
+	g = svg.append("g");
 	    
     g.append("g")
     .attr("class", "axis axis--x")
@@ -78,4 +80,73 @@ function displayLineGraph(data, year, country, svg){
     .attr("stroke-linecap", "round")
     .attr("stroke-width", 1.5)
     .attr("d", line2);
+
+    svg.append("text")
+    .text("Year")
+    .attr("text-anchor","middle")
+    .attr("x", width*0.5)
+    .attr("y", height*0.975);
+
+    svg.append("text")
+    .text("Democracy (via Polity IV)")
+    .attr("text-anchor", "middle")
+    .attr("transform", "rotate(270)")
+    .attr("y", 20)
+    .attr("x", -225);
+
+    svg.append("text")
+    .text("CO2 Emissions (Metric Tons per Capita)")
+    .attr("text-anchor", "middle")
+    .attr("transform", "rotate(90)")
+    .attr("y", -(width*0.97))
+    .attr("x", 225)
+
+    svg.append("rect")
+    .style("fill", "none")
+    .style("pointer-events", "all")
+    .attr("width", width)
+    .attr("height", height)
+    .on("mouseover", function() { focus1.style("display", null); focus2.style("display", null); })
+    .on("mouseout", function() { focus1.style("display", "none"); focus2.style("display", "none"); })
+    .on("mousemove", mousemove);
+
+    var focus1 = svg.append("g")
+      .attr("class", "focus")
+      .style("display", "none");
+
+    focus1.append("circle")
+      .attr("r", 4.5);
+
+    focus1.append("text")
+      .attr("x", 9)
+      .attr("y", -9)
+      .attr("dy", ".35em");
+
+    var focus2 = svg.append("g")
+      .attr("class", "focus")
+      .style("display", "none");
+
+    focus2.append("circle")
+      .attr("r", 4.5)
+      .attr("stroke", "steelblue")
+      .attr("fill", "steelblue");
+
+    focus2.append("text")
+      .attr("x", 9)
+      .attr("y", -9)
+      .attr("dy", ".35em");
+
+    bisect = d3.bisector(function(d) { return d[0]; }).left;
+
+    function mousemove() {
+        var x0 = xScale.invert(d3.mouse(this)[0]),
+            i = bisect(data, x0, 1),
+            d0 = data[i - 1],
+            d1 = data[i],
+            d = x0 - d0[0] > d1[0] - x0 ? d1 : d0;
+        focus1.attr("transform", "translate(" + xScale(d[0]) + "," + yScale2(d[2]) + ")");
+        focus1.select("text").text((+d[2]).toFixed(2));
+        focus2.attr("transform", "translate(" + xScale(d[0]) + "," + yScale1(d[1]) + ")");
+        focus2.select("text").text(d[1]);
+    }
 }

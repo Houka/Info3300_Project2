@@ -42,9 +42,7 @@
 		  	border: solid #aaa 2px;
 		  	overflow:auto;
 		}
-		svg{
-			border: 1px solid red;
-		}
+		
     </style>
 </head>
 <body>
@@ -60,7 +58,7 @@
 	<div id="main" class="container-fluid text-center" style="background-color: #ccc; margin-bottom:100px">
 		<svg id="map" width="59.8%" height="100%" ></svg>
 		<div id="sidebar" width="100%" height="100%">
-			<div id="infodiv" style="position:absolute; background-color:white; width:40.2%">
+			<div id="infodiv">
 				<h2 id="info"></h2>
 			</div>
 			<div>
@@ -147,7 +145,8 @@
 					prevYear = year;
 				}
 				if (selectedCountry != prevCountry){
-					log("prev country: "+prevCountry+", country:"+selectedCountry);
+					log(selectedCountry);
+					//log("prev country: "+prevCountry+", country:"+selectedCountry);
 					update(data, mapData, countryNames);
 					prevCountry = selectedCountry;
 				}
