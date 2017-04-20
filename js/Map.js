@@ -14,9 +14,13 @@ function displayMap(data, mapData, countryNames, year, svg){
 
 	//data -- democracy 
 	var demlist = [];
+	var demnamlist = [];
 	for (i = 0; i < 169; i++){
 		if (data[i] != null){
 			demlist.push(data[i].currentDemocracy);
+		}
+		else {
+			demlist.push(11);
 		}
 	}
 
@@ -34,7 +38,7 @@ function displayMap(data, mapData, countryNames, year, svg){
 		.enter().append("path")
 		.attr("d", path)
 		.attr("class", "feature")
-		.attr("fill", function(a, b) {return demcolors(demlist[b]);})
+		.attr("fill", function(a, b) {return demcolors(select_country(countryNames[a.id]));})
 		.on("click", clicked);
 
 	world_g.append("path")
@@ -45,6 +49,19 @@ function displayMap(data, mapData, countryNames, year, svg){
 	/*if (selectedCountry != ""){
 		clicked(getCountry(selectedCountry, topojson.feature(mapData, mapData.objects.countries).features));
 	}*/
+
+	function select_country(name) {
+		console.log(name);
+		select_data = data.filter(function(obj) {
+        	return obj.country === name;
+    	});
+    	if (select_data.length > 0) {
+    		return select_data[0].currentDemocracy;
+    	}
+    	else {
+    		return 11;
+    	}
+	}
 
 	function clicked(d) {
 		selectedCountry = countryNames[d.id];
@@ -83,7 +100,6 @@ function displayMap(data, mapData, countryNames, year, svg){
 }
 
 function getCountry(country,data){
-
 }
 
 function demcolors(num){
