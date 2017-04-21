@@ -56,12 +56,21 @@ function displaySunburst(data, year, country, svg){
         .attr("text-anchor","middle")
         .attr("alignment-baseline","hanging")
         .attr("font-size","12px")
-        .text("WORLD");
+        .text("");
+
+    var units = svg.append("text")
+        .attr("class","sunburstText")
+        .attr("x",width/2)
+        .attr("y",height/2+height/9)
+        .attr("text-anchor","middle")
+        .attr("alignment-baseline","hanging")
+        .attr("font-size","12px")
+        .text("");
 
     var text2 = svg.append("text")
         .attr("class","sunburstText")
         .attr("x",width/2)
-        .attr("y",height/2-1)
+        .attr("y",height/2-20)
         .attr("text-anchor","middle")
         .attr("alignment-baseline","baseline")
         .attr("font-size","70px")
@@ -97,17 +106,20 @@ function displaySunburst(data, year, country, svg){
         }
         if (d.depth == 2){
             selectedCountry = d.id;
-            text1.text("Metric Ton of CO2 Per Capital");
+            units.text("Metric Ton of CO2 Per Capital");
+            text1.text("");
             text2.text((+d.value).toFixed(2));
             continent.text(d.parent.id);
         }else if(d.depth == 1){
             selectedCountry = "";
             text1.text("");
+            units.text("");
             text2.text("");
             continent.text(d.id);
         }else{
             selectedCountry = "";
             text1.text("");
+            units.text("");
             text2.text("");
             continent.text("Continent");
         }
@@ -125,7 +137,7 @@ function displaySunburst(data, year, country, svg){
     }
 
     function enter(d){
-        if (text1.text()==="Metric Ton of CO2 Per Capital"){
+        if (units.text()==="Metric Ton of CO2 Per Capital"){
             return;
         }
         if (d.depth == 0){
