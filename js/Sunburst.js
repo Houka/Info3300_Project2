@@ -76,7 +76,7 @@ function displaySunburst(data, year, country, svg){
         .attr("font-size","40px")
         .text("Continent");
 
-    var country = svg.append("text")
+    var countryText = svg.append("text")
         .attr("class","sunburstText")
         .attr("id","countryText")
         .attr("x",width-20)
@@ -130,19 +130,19 @@ function displaySunburst(data, year, country, svg){
         }
         if (d.depth == 0){
             text1.text("");
-            country.text("Select a Country");
+            countryText.text("Select a Country");
             continent.text("Continent");            
             return;
         }
         if (d.depth == 1){
             text1.text("");
-            country.text("Select a Country");
+            countryText.text("Select a Country");
             continent.text(d.id);            
             return;
         }
         if (d.depth == 2){
             text1.text((+d.value).toFixed(2));
-            country.text(d.id);
+            countryText.text(d.id);
             continent.text(d.parent.id);
             return;
         }
@@ -163,8 +163,9 @@ function getArc(data, radius){
 function getCountrySunburst(country, nodes){
     var result = null;
     nodes.forEach(function(d){
-        if (d.id === country)
+        if (d.id === country){
             result = d;
+        }
     });
     return result;
 }
