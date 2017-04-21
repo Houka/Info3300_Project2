@@ -78,7 +78,9 @@
 			</div>
 			<div>
 				<svg id="sunburst" width="100%" height="100%"></svg>
-				<svg id="lineGraph" width="100%" height="100%"></svg>
+				<div id="line">
+					<svg id="lineGraph" width="100%" height="100%"></svg>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -140,7 +142,7 @@
 	<script src = "js/DataLoader.js"></script>
 	<script> // get, filter, and display data
 		/** Updates the display graphics on screen given a year and the data */
-		function update(data, mapData, countryNames){
+		function update(data, mapData, countryNames, first){
 			log("in update()");
 
 			filterYear(data, year);
@@ -149,7 +151,9 @@
 			displayMap(data, mapData, countryNames, year, d3.select("#map"));
 			displaySideInfo(data, year, selectedCountry, d3.select("#info"));
 			displayLineGraph(data, year, selectedCountry, d3.select("#lineGraph"));
-			displaySunburst(data, year, selectedCountry, d3.select("#sunburst"));
+			if(first==true){
+				displaySunburst(data, year, selectedCountry, d3.select("#sunburst"));
+			};
 			displayMapLegend(data, d3.select("#map"));
 
 			// put the update function in a interval that updates every 1500 milliseconds
@@ -157,13 +161,13 @@
 				// only update if there was a change in the input for year
 				if (prevYear != year){
 					log("prev year: "+prevYear+", year:"+year);
-					update(data, mapData, countryNames);
+					update(data, mapData, countryNames, false);
 					prevYear = year;
 				}
 				if (selectedCountry != prevCountry){
 					log(selectedCountry);
 					//log("prev country: "+prevCountry+", country:"+selectedCountry);
-					update(data, mapData, countryNames);
+					update(data, mapData, countryNames, false);
 					prevCountry = selectedCountry;
 				}
 			}, WAIT_TIME);
@@ -173,7 +177,7 @@
 			log("in displayData()");
 			// Load the csv data files and then runs a callback to display the data
 			loadData(function(data, mapData, countryNames) {
-				update(data, mapData,countryNames);
+				update(data, mapData,countryNames, true);
 			});
 		}
 
