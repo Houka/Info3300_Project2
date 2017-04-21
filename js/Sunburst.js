@@ -110,18 +110,21 @@ function displaySunburst(data, year, country, svg){
             text1.text("");
             text2.text((+d.value).toFixed(2));
             continent.text(d.parent.id);
+            countryText.text(d.id);
         }else if(d.depth == 1){
             selectedCountry = "";
             text1.text("");
             units.text("");
             text2.text("");
             continent.text(d.id);
+            countryText.text("Select a Country");
         }else{
             selectedCountry = "";
             text1.text("");
             units.text("");
             text2.text("");
             continent.text("Continent");
+            countryText.text("Select a Country");
         }
 
         svg.transition()
