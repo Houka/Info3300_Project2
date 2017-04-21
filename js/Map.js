@@ -41,8 +41,7 @@ function displayMap(data, mapData, countryNames, year, svg){
 		.attr("d", path)
 		.attr("class", "feature")
 		.attr("fill", function(a, b) {return demcolors(select_country(countryNames[a.id]));})
-		.on("click", clicked)
-		.on("mouseover", enter);
+		.on("click", clicked);
 
 	world_g.append("path")
 		.datum(topojson.mesh(mapData, mapData.objects.countries, function(a, b) { return a !== b; }))
@@ -62,7 +61,7 @@ function displayMap(data, mapData, countryNames, year, svg){
     		return 11;
     	}
 	}
-	
+
 	function clicked(d) {
 		if(d==null)
 			return reset(svg);
@@ -84,10 +83,6 @@ function displayMap(data, mapData, countryNames, year, svg){
 		svg.transition()
 			.duration(750)
 			.call( zoom.transform, d3.zoomIdentity.translate(translate[0],translate[1]).scale(scale) );
-	}
-
-	function enter(d){
-		d3.select("#countryText").text(countryNames[d.id]);
 	}
 
 	function zoomed() {
