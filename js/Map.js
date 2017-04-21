@@ -1,4 +1,5 @@
 var active = d3.select(null);	
+var colors = ["#fe1110","#ff594f","#ff9686","#ffd1bf","#fae3db","#f8feff","#bfd4ff","#859bff","#4a5cff","#2f43f1","#0711d3"];
 
 /* Displays the World Map */
 function displayMap(data, mapData, countryNames, year, svg){
@@ -111,31 +112,10 @@ function getCountry(country,countryNames,data){
 }
 
 function demcolors(num){
-	if (num == 0) {
-		return "#fe1110";
-	} else if (num == 1){
-		return "#ff594f";
-	} else if (num == 2){
-		return "#ff9686";
-	} else if (num == 3){
-		return "#ffd1bf";
-	} else if (num == 4){
-		return "#fae3db";
-	} else if (num == 5){
-		return "#f8feff";
-	} else if (num == 6){
-		return "#bfd4ff";
-	} else if (num == 7){
-		return "#859bff";
-	} else if (num == 8){
-		return "#4a5cff";
-	} else if (num == 9){
-		return "#2f43f1";
-	} else if (num == 10){
-		return "#0711d3";
-	} else {
+	if (num >=0 && num <= 10)
+		return colors[num];
+	else
 		return "black";
-	} 
 }
 
 function displaySideInfo(data, year, country, svg){
@@ -156,4 +136,32 @@ function createResetListener(svg, reset){
 // also stop propagation so we don’t click-to-zoom.
 function stopped() {
 	if (d3.event.defaultPrevented) d3.event.stopPropagation();
+}
+
+/* Creates and draws the color legend based on the coloring and birthrates
+*/
+function displayMapLegend(data, svg){
+    var width = +svg.style("width").replace("px",""),
+        height = +svg.style("height").replace("px","");
+
+	// scale functions
+	var scaleColor = d3.scaleOrdinal()
+		.domain([0,1,2,3,4,5,6,7,8,9,10])
+		.range(colors);
+
+	// legends
+	var mapLegendOrdinal = d3.legendColor()
+		.title("Democracy Rating")
+		.shapeWidth(20)
+    	.labelFormat(d3.format(".0f"))
+		.orient("horizontal")
+		.scale(scaleColor);
+
+	// add and draw legend
+	// GDP per capita = radius (USD)
+	svg.append("g")
+		.attr("class", "mapLegendOrdinal")
+		.attr("transform", "translate("+width*.005+", "+height*.05+")");
+	d3.select(".mapLegendOrdinal")
+		.call(mapLegendOrdinal);
 }
