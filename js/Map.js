@@ -118,10 +118,6 @@ function demcolors(num){
 		return "black";
 }
 
-function displaySideInfo(data, year, country, svg){
-   	d3.select("#info").text(country === ""? "Pick a country":country);
-}
-
 function createResetListener(svg, reset){
 	if (!svg.select("#resetListener").empty())
 		svg.append("rect")

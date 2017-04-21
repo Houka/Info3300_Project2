@@ -73,9 +73,6 @@
 	<div id="main" class="container-fluid text-center">
 		<svg id="map" width="59.8%" height="100%" ></svg>
 		<div id="sidebar" width="100%" height="100%">
-			<div id="infodiv">
-				<h2 id="info"></h2>
-			</div>
 			<div>
 				<svg id="sunburst" width="100%" height="100%"></svg>
 				<div id="line">
@@ -149,11 +146,8 @@
 			
 			// main displaying code goes here
 			displayMap(data, mapData, countryNames, year, d3.select("#map"));
-			displaySideInfo(data, year, selectedCountry, d3.select("#info"));
 			displayLineGraph(data, year, selectedCountry, d3.select("#lineGraph"));
-			if(first==true){
-				displaySunburst(data, year, selectedCountry, d3.select("#sunburst"));
-			};
+			displaySunburst(data, year, selectedCountry, d3.select("#sunburst"));
 			displayMapLegend(data, d3.select("#map"));
 
 			// put the update function in a interval that updates every 1500 milliseconds

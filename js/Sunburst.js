@@ -129,7 +129,7 @@ function displaySunburst(data, year, country, svg){
             return;
         }
         if (d.depth == 2){
-            text1.text("");
+            text1.text(d.id);
             continent.text("Continent: "+d.parent.id);
             return;
         }
