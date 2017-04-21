@@ -41,7 +41,9 @@ function displayMap(data, mapData, countryNames, year, svg){
 		.attr("d", path)
 		.attr("class", "feature")
 		.attr("fill", function(a, b) {return demcolors(select_country(countryNames[a.id]));})
-		.on("click", clicked);
+		.on("click", clicked)
+		.on("mouseover", enter)
+		.on("mouseout", exit);
 
 	world_g.append("path")
 		.datum(topojson.mesh(mapData, mapData.objects.countries, function(a, b) { return a !== b; }))
@@ -85,6 +87,13 @@ function displayMap(data, mapData, countryNames, year, svg){
 			.call( zoom.transform, d3.zoomIdentity.translate(translate[0],translate[1]).scale(scale) );
 	}
 
+	function enter(d){
+		d3.select("#countryText").text(countryNames[d.id]);
+	}
+
+	function exit(d){
+		d3.select("#countryText").text("Select a Country");
+	}
 
 	function zoomed() {
 		world_g.style("stroke-width", 1.5 / d3.event.transform.k + "px");
@@ -116,10 +125,6 @@ function demcolors(num){
 		return colors[num];
 	else
 		return "black";
-}
-
-function displaySideInfo(data, year, country, svg){
-   	d3.select("#info").text(country === ""? "Pick a country":country);
 }
 
 function createResetListener(svg, reset){
