@@ -12,7 +12,9 @@ function displayLineGraph(data, year, country, svg){
     svg.selectAll("rect").remove();
 
     // null case
-    if (data.length == 0) return;
+    if (data.length == 0){
+        return;
+    } 
 
     dem = data[0].democracy;
     co2 = data[0].co2;
@@ -149,4 +151,5 @@ function displayLineGraph(data, year, country, svg){
         focus2.attr("transform", "translate(" + xScale(d[0]) + "," + yScale1(d[1]) + ")");
         focus2.select("text").text(d[1]);
     }
+
 }

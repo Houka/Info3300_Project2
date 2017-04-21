@@ -35,6 +35,7 @@ function displaySunburst(data, year, country, svg){
         (root);
 
     // display data
+    g.selectAll("path").remove();
     var path = g.selectAll("path")
         .data(root.descendants())
         .enter().append("path")
