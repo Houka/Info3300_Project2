@@ -8,6 +8,9 @@
 	<script src="https://d3js.org/topojson.v2.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.21.0/d3-legend.min.js"></script>
 	<style>
+		body{
+			background-color: #333;
+		}
         .background {
 		  fill: none;
 		  pointer-events: all;
@@ -26,7 +29,6 @@
 		  stroke-width: .05;
 		}
 		.sunburstText{
-			font-size:40px;
 			fill:#fff;
 		}
 		#main {
@@ -49,7 +51,6 @@
 			color:#eee;
 		}
 		#top{
-			background-color: #333;
 		}
 		#sliderDiv{
 			color:#eee;			
@@ -64,9 +65,9 @@
 		</div>
 		<div id="sliderDiv" class="container text-center">
 			<b><span id="yearLabel">Year: 1960</span></b>
-			<input type="range" id="yearSlider" max="1960" min="2016" value="1960" />
+			<input type="range" id="yearSlider" min="1960" max="2007" value="1960" />
 			<span class="pull-left">1960</span>
-			<span class="pull-right">2016</span>
+			<span class="pull-right">2007</span>
 		</div>
 	</div>
 	<div id="main" class="container-fluid text-center">
@@ -111,7 +112,7 @@
 		var selectedCountry = "";
 		var prevCountry = "";
 		var MIN_YEAR = 1960;
-		var MAX_YEAR = 2016;
+		var MAX_YEAR = 2007;
 		var years = d3.range(MAX_YEAR-MIN_YEAR).map(function(i){return i+MIN_YEAR});
 		var yearSlider = d3.select("#yearSlider");
 

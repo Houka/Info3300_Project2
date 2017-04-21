@@ -10,6 +10,8 @@ function displaySunburst(data, year, country, svg){
         padding = 50,
         radius = Math.min(width-padding, height-padding) / 2;
 
+    svg.selectAll("*").remove();
+
     var g = svg.append("g")
         .attr("transform", "translate(" + width / 2 + "," + (height / 2 + 10) + ")");
 
@@ -49,16 +51,29 @@ function displaySunburst(data, year, country, svg){
     var text1 = svg.append("text")
         .attr("class","sunburstText")
         .attr("x",width/2)
-        .attr("y",height/2-height/4)
+        .attr("y",height/2+1)
         .attr("text-anchor","middle")
-        .text("Select A Country");
+        .attr("alignment-baseline","hanging")
+        .attr("font-size","20px")
+        .text("WORLD");
 
     var text2 = svg.append("text")
         .attr("class","sunburstText")
         .attr("x",width/2)
-        .attr("y",height/2+height/4)
+        .attr("y",height/2-1)
         .attr("text-anchor","middle")
+        .attr("alignment-baseline","baseline")
+        .attr("font-size","60px")
         .text("");
+
+    var continent = svg.append("text")
+        .attr("class","sunburstText")
+        .attr("x",20)
+        .attr("y",20)
+        .attr("text-anchor","left")
+        .attr("alignment-baseline","hanging")
+        .attr("font-size","40px")
+        .text("Continent");
 
     if (country != ""){
         click(getCountrySunburst(country, root.descendants()));
@@ -73,10 +88,17 @@ function displaySunburst(data, year, country, svg){
             selectedCountry = d.id;
             text1.text("Metric Ton of CO2 Per Capital");
             text2.text((+d.value).toFixed(2));
+            continent.text("Continent: "+d.parent.id);
+        }else if(d.depth == 1){
+            selectedCountry = "";
+            text1.text("");
+            text2.text("");
+            continent.text("Continent: "+d.id);
         }else{
             selectedCountry = "";
-            text1.text(d.id);
+            text1.text("");
             text2.text("");
+            continent.text("Continent");
         }
 
         svg.transition()
@@ -92,6 +114,24 @@ function displaySunburst(data, year, country, svg){
     }
 
     function enter(d){
+        if (text1.text()==="Metric Ton of CO2 Per Capital"){
+            return;
+        }
+        if (d.depth == 0){
+            text1.text("");
+            continent.text("Continent");            
+            return;
+        }
+        if (d.depth == 1){
+            text1.text("");
+            continent.text("Continent: "+d.id);            
+            return;
+        }
+        if (d.depth == 2){
+            text1.text("");
+            continent.text("Continent: "+d.parent.id);
+            return;
+        }
         text1.text(d.id);
     }
 }
