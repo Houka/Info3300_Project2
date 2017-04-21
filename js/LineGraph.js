@@ -84,24 +84,20 @@ function displayLineGraph(data, yr, country, svg){
     .attr("d", line2);
 
     svg.append("text")
-    .text("Year")
-    .attr("text-anchor","middle")
-    .attr("x", width*0.5)
-    .attr("y", height*0.975);
-
-    svg.append("text")
     .text("Democracy (via Polity IV)")
     .attr("text-anchor", "middle")
     .attr("transform", "rotate(270)")
+    .attr("font-size", "11")
     .attr("y", 20)
-    .attr("x", -225);
+    .attr("x", -120);
 
     svg.append("text")
     .text("CO2 Emissions (Metric Tons per Capita)")
     .attr("text-anchor", "middle")
     .attr("transform", "rotate(90)")
+    .attr("font-size", "11")
     .attr("y", -(width*0.97))
-    .attr("x", 225)
+    .attr("x", 120)
 
     svg.append("rect")
     .style("fill", "none")

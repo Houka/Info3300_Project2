@@ -68,7 +68,7 @@ function displayMap(data, mapData, countryNames, year, svg){
 			return reset(svg);
 
 		selectedCountry = countryNames[d.id];
-
+		
 		if (active.node() === this) return reset(svg);
 		active.classed("active", false);
 		active = world_g.select("#path"+d.id).classed("active", true);
