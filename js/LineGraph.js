@@ -1,5 +1,5 @@
 /* Displays the line graphs */
-function displayLineGraph(data, year, country, svg){
+function displayLineGraph(data, yr, country, svg){
     var width = +svg.style("width").replace("px",""),
         height = +svg.style("height").replace("px","");
 	var minYear=1960; var maxYear=2016;
@@ -110,7 +110,8 @@ function displayLineGraph(data, year, country, svg){
     .attr("height", height)
     .on("mouseover", function() { focus1.style("display", null); focus2.style("display", null); })
     .on("mouseout", function() { focus1.style("display", "none"); focus2.style("display", "none"); })
-    .on("mousemove", mousemove);
+    .on("mousemove", mousemove)
+    .on("click", click);
 
     var focus1 = svg.append("g")
       .attr("class", "focus")
@@ -152,4 +153,13 @@ function displayLineGraph(data, year, country, svg){
         focus2.select("text").text(d[1]);
     }
 
+    function click() {
+        var x0 = xScale.invert(d3.mouse(this)[0]),
+            i = bisect(data, x0, 1),
+            d0 = data[i - 1],
+            d1 = data[i],
+            d = x0 - d0[0] > d1[0] - x0 ? d1 : d0;
+        log(d[0]);
+        year = d[0]
+    }
 }
