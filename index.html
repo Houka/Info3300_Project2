@@ -100,6 +100,11 @@
 			.style("height", screenHeight-footerOffset)
 			.style("width", screenWidth*.38);
 
+		d3.select("#lineGraph")
+			.style("height", (+mainDiv.style("height").replace("px",""))/2)
+
+		d3.select("#sunburst")
+			.style("height", (+mainDiv.style("height").replace("px",""))/2)
 		// updating vars
 		var WAIT_TIME = 100; // in milliseconds
 
