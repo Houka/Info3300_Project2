@@ -55,7 +55,7 @@ function displaySunburst(data, year, country, svg){
         .attr("y",height/2+1)
         .attr("text-anchor","middle")
         .attr("alignment-baseline","hanging")
-        .attr("font-size","20px")
+        .attr("font-size","12px")
         .text("WORLD");
 
     var text2 = svg.append("text")
@@ -99,12 +99,12 @@ function displaySunburst(data, year, country, svg){
             selectedCountry = d.id;
             text1.text("Metric Ton of CO2 Per Capital");
             text2.text((+d.value).toFixed(2));
-            continent.text(+d.parent.id);
+            continent.text(d.parent.id);
         }else if(d.depth == 1){
             selectedCountry = "";
             text1.text("");
             text2.text("");
-            continent.text(+d.id);
+            continent.text(d.id);
         }else{
             selectedCountry = "";
             text1.text("");
