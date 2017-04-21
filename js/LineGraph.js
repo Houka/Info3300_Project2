@@ -145,12 +145,14 @@ function displayLineGraph(data, yr, country, svg){
         var x0 = xScale.invert(d3.mouse(this)[0]),
             i = bisect(data, x0, 1),
             d0 = data[i - 1],
-            d1 = data[i],
-            d = x0 - d0[0] > d1[0] - x0 ? d1 : d0;
-        focus1.attr("transform", "translate(" + xScale(d[0]) + "," + yScale2(d[2]) + ")");
-        focus1.select("text").text((+d[2]).toFixed(2));
-        focus2.attr("transform", "translate(" + xScale(d[0]) + "," + yScale1(d[1]) + ")");
-        focus2.select("text").text(d[1]);
+            d1 = data[i]
+        if(d0 != null && d1 != null){
+            var d = x0 - d0[0] > d1[0] - x0 ? d1 : d0;
+            focus1.attr("transform", "translate(" + xScale(d[0]) + "," + yScale2(d[2]) + ")");
+            focus1.select("text").text((+d[2]).toFixed(2));
+            focus2.attr("transform", "translate(" + xScale(d[0]) + "," + yScale1(d[1]) + ")");
+            focus2.select("text").text(d[1]);
+        }
     }
 
     function click() {

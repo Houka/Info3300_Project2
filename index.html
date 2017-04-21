@@ -160,6 +160,8 @@
 				// only update if there was a change in the input for year
 				if (prevYear != year){
 					log("prev year: "+prevYear+", year:"+year);
+					yearSlider.property("value", year);
+					d3.select("#yearLabel").text("Year: "+year);
 					update(data, mapData, countryNames, false);
 					prevYear = year;
 				}
